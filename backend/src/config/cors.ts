@@ -1,6 +1,7 @@
 import { env } from './env.js';
 
 const localhostPattern = /^http:\/\/(localhost|127\.0\.0\.1):(\d+)$/;
+const vercelPattern = /^https:\/\/([a-z0-9-]+\.)*vercel\.app$/i;
 
 export function isAllowedOrigin(origin: string | undefined): boolean {
   if (!origin) {
@@ -11,5 +12,9 @@ export function isAllowedOrigin(origin: string | undefined): boolean {
     return true;
   }
 
-  return localhostPattern.test(origin);
+  if (localhostPattern.test(origin)) {
+    return true;
+  }
+
+  return vercelPattern.test(origin);
 }
