@@ -15,9 +15,9 @@ export function LandingPage() {
       <button className="gold-btn" onClick={() => navigate('/dashboard/auth')}>
         Enter The Platform
       </button>
-      {/* <button className="ghost-btn" onClick={() => navigate('/admin/login')}>
+      <button className="ghost-btn" onClick={() => navigate('/admin/login')}>
         Admin Portal
-      </button> */}
+      </button>
     </main>
   );
 }
