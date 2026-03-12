@@ -28,28 +28,28 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
 export const api = {
   teamRegister: (name: string, password: string) =>
-    request<{ token: string; team: { id: string; name: string } }>('/api/auth/team/register', {
+    request<{ token: string; team: { id: string; name: string } }>('api/auth/team/register', {
       method: 'POST',
       body: JSON.stringify({ name, password })
     }),
   teamLogin: (name: string, password: string) =>
-    request<{ token: string; team: { id: string; name: string } }>('/api/auth/team/login', {
+    request<{ token: string; team: { id: string; name: string } }>('api/auth/team/login', {
       method: 'POST',
       body: JSON.stringify({ name, password })
     }),
   adminLogin: (username: string, password: string) =>
-    request<{ token: string; admin: { id: string; username: string } }>('/api/auth/admin/login', {
+    request<{ token: string; admin: { id: string; username: string } }>('api/auth/admin/login', {
       method: 'POST',
       body: JSON.stringify({ username, password })
     }),
   getQuestion: () => request<{ question: { id: string; title: string; prompt: string } | null }>('/api/user/question'),
   submitAnswer: (answer: string) =>
-    request<{ submissionId: string }>('/api/user/submit', {
+    request<{ submissionId: string }>('api/user/submit', {
       method: 'POST',
       body: JSON.stringify({ answer })
     }),
   getLeaderboard: () =>
-    request<{ leaderboard: Array<{ id: string; name: string; totalScore: number }> }>('/api/user/leaderboard'),
+    request<{ leaderboard: Array<{ id: string; name: string; totalScore: number }> }>('api/user/leaderboard'),
   updateQuestion: (title: string, prompt: string) =>
     request<{
       question: { id: string; title: string; prompt: string };
@@ -61,7 +61,7 @@ export const api = {
         createdAt: string;
         team: { name: string };
       }>;
-    }>('/api/admin/question', {
+    }>('api/admin/question', {
       method: 'PUT',
       body: JSON.stringify({ title, prompt })
     }),
@@ -75,7 +75,7 @@ export const api = {
         createdAt: string;
         team: { name: string };
       }>;
-    }>('/api/admin/submissions'),
+    }>('api/admin/submissions'),
   clearTeams: () =>
     request<{
       success: boolean;
@@ -89,7 +89,7 @@ export const api = {
         team: { name: string };
       }>;
       leaderboard: Array<{ id: string; name: string; totalScore: number }>;
-    }>('/api/admin/teams', {
+    }>('api/admin/teams', {
       method: 'DELETE'
     }),
   scoreSubmission: (id: string, isCorrect: boolean) =>
@@ -104,7 +104,7 @@ export const api = {
         team: { name: string };
       }>;
       leaderboard: Array<{ id: string; name: string; totalScore: number }>;
-    }>(`/api/admin/submissions/${id}/score`, {
+    }>(`api/admin/submissions/${id}/score`, {
       method: 'PATCH',
       body: JSON.stringify({ isCorrect })
     }),
