@@ -42,7 +42,7 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ username, password })
     }),
-  getQuestion: () => request<{ question: { id: string; title: string; prompt: string } | null }>('/api/user/question'),
+  getQuestion: () => request<{ question: { id: string; title: string; prompt: string } | null }>('api/user/question'),
   submitAnswer: (answer: string) =>
     request<{ submissionId: string }>('api/user/submit', {
       method: 'POST',
@@ -109,9 +109,9 @@ export const api = {
       body: JSON.stringify({ isCorrect })
     }),
   getScoringConfig: () =>
-    request<{ config: { startingScore: number; reductionAmount: number; minimumScore: number } }>('/api/admin/scoring-config'),
+    request<{ config: { startingScore: number; reductionAmount: number; minimumScore: number } }>('api/admin/scoring-config'),
   updateScoringConfig: (startingScore: number, reductionAmount: number, minimumScore: number) =>
-    request<{ config: { startingScore: number; reductionAmount: number; minimumScore: number } }>('/api/admin/scoring-config', {
+    request<{ config: { startingScore: number; reductionAmount: number; minimumScore: number } }>('api/admin/scoring-config', {
       method: 'PATCH',
       body: JSON.stringify({ startingScore, reductionAmount, minimumScore })
     })
