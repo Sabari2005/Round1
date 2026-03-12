@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Team {
+  id           String       @id @default(cuid())
+  name         String       @unique
+  passwordHash String
+  totalScore   Int          @default(0)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  submissions  Submission[]
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Question {
+  id          String       @id @default(cuid())
+  title       String
+  prompt      String
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  submissions Submission[]
+}
+
+model Submission {
+  id           String    @id @default(cuid())
+  answer       String
+  isCorrect    Boolean?
+  awardedScore Int?
+  createdAt    DateTime  @default(now())
+  scoredAt     DateTime?
+  teamId       String
+  questionId   String
+  question     Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  team         Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, questionId])
+  @@index([questionId, createdAt])
+}
+
+model ScoringConfig {
+  id              Int      @id
+  startingScore   Int      @default(100)
+  reductionAmount Int      @default(10)
+  minimumScore    Int      @default(50)
+  updatedAt       DateTime @updatedAt
+}
