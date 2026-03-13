@@ -811,6 +811,33 @@ h4,
   gap: 1rem;
 }
 
+.admin-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.admin-summary-card {
+  min-height: 124px;
+  align-content: start;
+  background:
+    linear-gradient(180deg, rgba(34, 25, 15, 0.92), rgba(14, 10, 7, 0.95)),
+    radial-gradient(circle at top right, rgba(245, 210, 122, 0.13), transparent 36%);
+}
+
+.admin-summary-card p {
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+}
+
+.admin-metric {
+  display: block;
+  margin-top: 0.35rem;
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.25rem, 1.9vw, 1.9rem);
+  color: var(--gold-bright);
+}
+
 .dashboard-summary-card {
   min-height: 132px;
   align-content: start;
@@ -1108,6 +1135,12 @@ textarea:focus {
   align-content: start;
 }
 
+.admin-control-card {
+  background:
+    linear-gradient(180deg, rgba(31, 23, 14, 0.92), rgba(13, 10, 7, 0.95)),
+    radial-gradient(circle at top left, rgba(245, 210, 122, 0.12), transparent 38%);
+}
+
 .admin-tab-row {
   display: flex;
   gap: 0.6rem;
@@ -1313,6 +1346,10 @@ textarea:focus {
   }
 
   .dashboard-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-summary-grid {
     grid-template-columns: 1fr;
   }
 

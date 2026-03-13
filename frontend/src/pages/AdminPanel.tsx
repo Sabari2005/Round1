@@ -38,6 +38,10 @@ export function AdminPanel() {
   const [isClearingUsers, setIsClearingUsers] = useState(false);
   const [gradingSubmissionId, setGradingSubmissionId] = useState<string | null>(null);
 
+  const pendingCount = submissions.length;
+  const totalTeams = leaderboard.length;
+  const topTeam = leaderboard[0];
+
   useEffect(() => {
     if (!session || session.role !== 'admin') {
       navigate('/admin/login');
@@ -167,14 +171,33 @@ export function AdminPanel() {
         <div>
           <span className="label">Admin</span>
           <h2>{session?.name}</h2>
+          <span className="label">Control center for questions, grading, and rankings</span>
         </div>
         <button className="ghost-btn" onClick={logout}>
           Logout
         </button>
       </header>
 
+      <section className="admin-summary-grid">
+        <article className="glow-card admin-summary-card">
+          <span className="label">Pending Reviews</span>
+          <strong className="admin-metric">{pendingCount}</strong>
+          <p>Submissions waiting for your grading decision.</p>
+        </article>
+        <article className="glow-card admin-summary-card">
+          <span className="label">Registered Teams</span>
+          <strong className="admin-metric">{totalTeams}</strong>
+          <p>Teams currently visible on the leaderboard.</p>
+        </article>
+        <article className="glow-card admin-summary-card">
+          <span className="label">Top Team</span>
+          <strong className="admin-metric">{topTeam ? topTeam.name : '--'}</strong>
+          <p>{topTeam ? `${topTeam.totalScore} points` : 'No scores yet'}</p>
+        </article>
+      </section>
+
       <section className="grid-two">
-        <form className="glow-card stack-gap" onSubmit={updateQuestion}>
+        <form className="glow-card stack-gap admin-control-card" onSubmit={updateQuestion}>
           <span className="label">Active Question Control</span>
           <input
             placeholder="Question title"
@@ -296,7 +319,9 @@ export function AdminPanel() {
                     </div>
                   </article>
                 ))}
-                {submissions.length === 0 && <p className="status-text">No pending submissions for the active question.</p>}
+                {submissions.length === 0 && (
+                  <p className="status-text">No pending submissions for the active question.</p>
+                )}
               </div>
             </>
           ) : (
