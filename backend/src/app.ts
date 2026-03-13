@@ -7,6 +7,7 @@ import { env } from './config/env.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 import { adminRouter } from './routes/admin.js';
 import { authRouter } from './routes/auth.js';
+import { mediaRouter } from './routes/media.js';
 import { userRouter } from './routes/user.js';
 
 export const app = express();
@@ -33,6 +34,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/api/auth', authRouter);
+app.use('/api/media', mediaRouter);
 app.use('/api/user', userRouter);
 app.use('/api/admin', adminRouter);
 

@@ -31,6 +31,16 @@ userRouter.post('/submit', async (req: RequestWithUser, res, next) => {
     const payload = submitSchema.parse(req.body);
     const teamId = req.user!.sub;
 
+    const team = await prisma.team.findUnique({
+      where: { id: teamId },
+      select: { id: true }
+    });
+
+    if (!team) {
+      res.status(401).json({ error: 'Team session is no longer valid. Please login again.' });
+      return;
+    }
+
     const question = await prisma.question.findFirst({
       where: { isActive: true },
       orderBy: { updatedAt: 'desc' }

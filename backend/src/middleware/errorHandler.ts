@@ -23,6 +23,16 @@ export function errorHandler(err: unknown, _req: Request, res: Response, _next: 
       return;
     }
 
+    if (err.code === 'P2003') {
+      res.status(409).json({ error: 'Related record not found. Please login again.' });
+      return;
+    }
+
+    if (err.code === 'P2022') {
+      res.status(500).json({ error: 'Database schema is outdated. Run migrations and redeploy backend.' });
+      return;
+    }
+
     res.status(400).json({ error: 'Database request failed' });
     return;
   }

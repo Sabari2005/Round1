@@ -4,6 +4,17 @@ import { api } from '../lib/api';
 import { clearSession, getSession } from '../lib/auth';
 import { socket } from '../lib/socket';
 
+const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+
+function buildImageProxyUrl(rawUrl: string, download = false): string {
+  const url = new URL('/api/media/image', API_BASE);
+  url.searchParams.set('url', rawUrl);
+  if (download) {
+    url.searchParams.set('download', '1');
+  }
+  return url.toString();
+}
+
 type Question = {
   id: string;
   title: string;
@@ -89,8 +100,8 @@ export function UserDashboard() {
           <p>{question?.prompt ?? 'The lamp is silent for now.'}</p>
           {question?.imageUrl && (
             <div className="question-image-wrap">
-              <img className="question-image" src={question.imageUrl} alt={question.title} />
-              <a className="ghost-btn" href={question.imageUrl} download target="_blank" rel="noreferrer">
+              <img className="question-image" src={buildImageProxyUrl(question.imageUrl)} alt={question.title} />
+              <a className="ghost-btn" href={buildImageProxyUrl(question.imageUrl, true)} target="_blank" rel="noreferrer">
                 Download Image
               </a>
             </div>
