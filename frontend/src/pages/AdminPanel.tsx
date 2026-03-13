@@ -29,7 +29,6 @@ export function AdminPanel() {
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const [isClearingUsers, setIsClearingUsers] = useState(false);
   const [gradingSubmissionId, setGradingSubmissionId] = useState<string | null>(null);
-  const [config, setConfig] = useState({ startingScore: 100, reductionAmount: 10, minimumScore: 50 });
 
   useEffect(() => {
     if (!session || session.role !== 'admin') {
@@ -38,8 +37,6 @@ export function AdminPanel() {
     }
 
     void api.getSubmissions().then((data) => setSubmissions(data.submissions));
-    void api.getScoringConfig().then((data) => setConfig(data.config));
-
     socket.connect();
     socket.on('submission:new', () => {
       void api.getSubmissions().then((data) => setSubmissions(data.submissions));
@@ -68,14 +65,14 @@ export function AdminPanel() {
     setIsBroadcasting(true);
     setStatus('');
     try {
-      const parseOptionalNumber = (value: string): number | null => {
+      const parseRequiredNumber = (value: string, fieldName: string): number => {
         const trimmed = value.trim();
         if (!trimmed) {
-          return null;
+          throw new Error(`${fieldName} is required for each question`);
         }
         const parsed = Number(trimmed);
         if (!Number.isFinite(parsed)) {
-          throw new Error('Question scoring fields must be valid numbers');
+          throw new Error(`${fieldName} must be a valid number`);
         }
         return parsed;
       };
@@ -84,9 +81,9 @@ export function AdminPanel() {
         title,
         prompt,
         imageUrl: imageUrl.trim() || null,
-        startingScore: parseOptionalNumber(questionScoring.startingScore),
-        reductionAmount: parseOptionalNumber(questionScoring.reductionAmount),
-        minimumScore: parseOptionalNumber(questionScoring.minimumScore)
+        startingScore: parseRequiredNumber(questionScoring.startingScore, 'Starting score'),
+        reductionAmount: parseRequiredNumber(questionScoring.reductionAmount, 'Reduction amount'),
+        minimumScore: parseRequiredNumber(questionScoring.minimumScore, 'Minimum score')
       });
       setTitle('');
       setPrompt('');
@@ -116,17 +113,6 @@ export function AdminPanel() {
       setStatus(error instanceof Error ? error.message : 'Failed to score submission');
     } finally {
       setGradingSubmissionId(null);
-    }
-  }
-
-  async function updateConfig(event: FormEvent) {
-    event.preventDefault();
-    setStatus('');
-    try {
-      await api.updateScoringConfig(config.startingScore, config.reductionAmount, config.minimumScore);
-      setStatus('Scoring configuration saved.');
-    } catch (error) {
-      setStatus(error instanceof Error ? error.message : 'Failed to save scoring config');
     }
   }
 
@@ -191,13 +177,14 @@ export function AdminPanel() {
             value={imageUrl}
             onChange={(event) => setImageUrl(event.target.value)}
           />
-          <span className="label">Question-Specific Scoring (optional)</span>
+          <span className="label">Question Scoring (set per question)</span>
           <label className="field-label">
             Starting Score
             <input
               type="number"
               min={1}
-              placeholder="Uses global config when left blank"
+              required
+              placeholder="Set score for first correct team"
               value={questionScoring.startingScore}
               onChange={(event) =>
                 setQuestionScoring((prev) => ({
@@ -212,7 +199,8 @@ export function AdminPanel() {
             <input
               type="number"
               min={1}
-              placeholder="Uses global config when left blank"
+              required
+              placeholder="Points reduced per next correct team"
               value={questionScoring.reductionAmount}
               onChange={(event) =>
                 setQuestionScoring((prev) => ({
@@ -227,7 +215,8 @@ export function AdminPanel() {
             <input
               type="number"
               min={1}
-              placeholder="Uses global config when left blank"
+              required
+              placeholder="Lowest score limit for correct answers"
               value={questionScoring.minimumScore}
               onChange={(event) =>
                 setQuestionScoring((prev) => ({
@@ -240,38 +229,6 @@ export function AdminPanel() {
           <button className="gold-btn" disabled={isBroadcasting}>
             {isBroadcasting ? 'Broadcasting...' : 'Broadcast New Question'}
           </button>
-        </form>
-
-        <form className="glow-card stack-gap" onSubmit={updateConfig}>
-          <span className="label">Scoring Configuration</span>
-          <label className="field-label">
-            Starting Score
-            <input
-              type="number"
-              min={50}
-              value={config.startingScore}
-              onChange={(event) => setConfig((prev) => ({ ...prev, startingScore: Number(event.target.value) }))}
-            />
-          </label>
-          <label className="field-label">
-            Reduction Amount
-            <input
-              type="number"
-              min={1}
-              value={config.reductionAmount}
-              onChange={(event) => setConfig((prev) => ({ ...prev, reductionAmount: Number(event.target.value) }))}
-            />
-          </label>
-          <label className="field-label">
-            Minimum Score
-            <input
-              type="number"
-              min={1}
-              value={config.minimumScore}
-              onChange={(event) => setConfig((prev) => ({ ...prev, minimumScore: Number(event.target.value) }))}
-            />
-          </label>
-          <button className="gold-btn">Save Scoring Rules</button>
         </form>
 
         <section className="glow-card stack-gap">

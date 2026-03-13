@@ -23,9 +23,13 @@ Recommended stack:
    - ADMIN_USERNAME = admin
    - ADMIN_PASSWORD = strong password
 5. Run Prisma migration on Railway backend shell:
-   - npx prisma migrate deploy
+   - npm run prisma:migrate:deploy
 6. Seed admin user once:
    - npm run seed:admin
+
+Whenever backend Prisma schema changes (new columns/models), always run migration deploy before restarting:
+- npm run prisma:migrate:deploy
+- npm run build
 
 ## 2) Deploy frontend
 
@@ -72,3 +76,6 @@ Redeploy backend if you changed this variable.
 - Local development remains SQLite using backend/.env.
 - Production should use PostgreSQL for reliability and multi-user persistence.
 - If WebSocket connection fails in production, confirm VITE_SOCKET_URL uses the same HTTPS backend domain.
+- If you see an error like `Unknown argument imageUrl` from Prisma, your deployed backend is using an old Prisma client or unapplied migration. Redeploy backend with:
+   - Build command: npm install && npm run build
+   - Pre-start one-time migration: npm run prisma:migrate:deploy
