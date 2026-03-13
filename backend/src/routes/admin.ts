@@ -185,6 +185,22 @@ adminRouter.patch('/submissions/:id/score', async (req, res, next) => {
       return;
     }
 
+    if (payload.isCorrect) {
+      const alreadyCorrect = await prisma.submission.findFirst({
+        where: {
+          teamId: existingSubmission.teamId,
+          questionId: existingSubmission.questionId,
+          isCorrect: true
+        },
+        select: { id: true }
+      });
+
+      if (alreadyCorrect) {
+        res.status(409).json({ error: 'This team already has a correct answer for this question' });
+        return;
+      }
+    }
+
     const submission = await prisma.submission.update({
       where: { id: req.params.id },
       data: {
@@ -196,8 +212,29 @@ adminRouter.patch('/submissions/:id/score', async (req, res, next) => {
 
     await recomputeQuestionScores(submission.questionId);
 
+    const gradedSubmission = await prisma.submission.findUnique({
+      where: { id: submission.id },
+      select: {
+        id: true,
+        teamId: true,
+        questionId: true,
+        isCorrect: true,
+        awardedScore: true
+      }
+    });
+
     const leaderboard = await getLeaderboard();
     getIo().to('leaderboard').emit('leaderboard:update', leaderboard);
+
+    if (gradedSubmission) {
+      getIo().to(`team:${gradedSubmission.teamId}`).emit('submission:result', {
+        submissionId: gradedSubmission.id,
+        questionId: gradedSubmission.questionId,
+        isCorrect: gradedSubmission.isCorrect,
+        awardedScore: gradedSubmission.awardedScore,
+        canSubmit: gradedSubmission.isCorrect === false
+      });
+    }
 
     const activeSubmissions = await prisma.submission.findMany({
       where: {

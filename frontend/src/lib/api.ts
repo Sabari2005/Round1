@@ -62,8 +62,19 @@ export const api = {
       body: JSON.stringify({ username, password })
     }),
   getQuestion: () => request<{ question: QuestionDto | null }>('api/user/question'),
+  getSubmissionStatus: () =>
+    request<{
+      status: 'idle' | 'pending' | 'correct' | 'incorrect';
+      canSubmit: boolean;
+      submission: {
+        id: string;
+        isCorrect: boolean | null;
+        awardedScore: number | null;
+        createdAt: string;
+      } | null;
+    }>('api/user/submission-status'),
   submitAnswer: (answer: string) =>
-    request<{ submissionId: string }>('api/user/submit', {
+    request<{ submissionId: string; status: 'pending'; canSubmit: false }>('api/user/submit', {
       method: 'POST',
       body: JSON.stringify({ answer })
     }),

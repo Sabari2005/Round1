@@ -13,6 +13,85 @@ export const userRouter = Router();
 
 userRouter.use(authenticate, requireRole('team'));
 
+userRouter.get('/submission-status', async (req: RequestWithUser, res, next) => {
+  try {
+    const teamId = req.user!.sub;
+
+    const question = await prisma.question.findFirst({
+      where: { isActive: true },
+      orderBy: { updatedAt: 'desc' }
+    });
+
+    if (!question) {
+      res.json({ status: 'idle', canSubmit: false, submission: null });
+      return;
+    }
+
+    const correctSubmission = await prisma.submission.findFirst({
+      where: {
+        teamId,
+        questionId: question.id,
+        isCorrect: true
+      },
+      orderBy: [{ scoredAt: 'desc' }, { createdAt: 'desc' }]
+    });
+
+    if (correctSubmission) {
+      res.json({
+        status: 'correct',
+        canSubmit: false,
+        submission: {
+          id: correctSubmission.id,
+          isCorrect: true,
+          awardedScore: correctSubmission.awardedScore,
+          createdAt: correctSubmission.createdAt
+        }
+      });
+      return;
+    }
+
+    const latestSubmission = await prisma.submission.findFirst({
+      where: {
+        teamId,
+        questionId: question.id
+      },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }]
+    });
+
+    if (!latestSubmission) {
+      res.json({ status: 'idle', canSubmit: true, submission: null });
+      return;
+    }
+
+    if (latestSubmission.isCorrect === null) {
+      res.json({
+        status: 'pending',
+        canSubmit: false,
+        submission: {
+          id: latestSubmission.id,
+          isCorrect: null,
+          awardedScore: latestSubmission.awardedScore,
+          createdAt: latestSubmission.createdAt
+        }
+      });
+      return;
+    }
+
+    res.json({
+      status: 'incorrect',
+      canSubmit: true,
+      submission: {
+        id: latestSubmission.id,
+        isCorrect: false,
+        awardedScore: latestSubmission.awardedScore,
+        createdAt: latestSubmission.createdAt
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 userRouter.get('/question', async (_req, res, next) => {
   try {
     const question = await prisma.question.findFirst({
@@ -51,17 +130,31 @@ userRouter.post('/submit', async (req: RequestWithUser, res, next) => {
       return;
     }
 
-    const existing = await prisma.submission.findUnique({
+    const hasCorrectSubmission = await prisma.submission.findFirst({
       where: {
-        teamId_questionId: {
-          teamId,
-          questionId: question.id
-        }
-      }
+        teamId,
+        questionId: question.id,
+        isCorrect: true
+      },
+      select: { id: true }
     });
 
-    if (existing) {
-      res.status(409).json({ error: 'You already submitted for the current question' });
+    if (hasCorrectSubmission) {
+      res.status(409).json({ error: 'You already answered this question correctly' });
+      return;
+    }
+
+    const pendingSubmission = await prisma.submission.findFirst({
+      where: {
+        teamId,
+        questionId: question.id,
+        isCorrect: null
+      },
+      select: { id: true }
+    });
+
+    if (pendingSubmission) {
+      res.status(409).json({ error: 'Your latest answer is still awaiting admin review' });
       return;
     }
 
@@ -91,7 +184,7 @@ userRouter.post('/submit', async (req: RequestWithUser, res, next) => {
     const leaderboard = await getLeaderboard();
     getIo().to('leaderboard').emit('leaderboard:update', leaderboard);
 
-    res.status(201).json({ submissionId: submission.id });
+    res.status(201).json({ submissionId: submission.id, status: 'pending', canSubmit: false });
   } catch (error) {
     next(error);
   }

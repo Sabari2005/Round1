@@ -24,6 +24,18 @@ export function initSocket(server: HttpServer): Server {
       socket.join('leaderboard');
     });
 
+    socket.on('team:join', (teamId: string) => {
+      if (typeof teamId === 'string' && teamId.trim()) {
+        socket.join(`team:${teamId}`);
+      }
+    });
+
+    socket.on('team:leave', (teamId: string) => {
+      if (typeof teamId === 'string' && teamId.trim()) {
+        socket.leave(`team:${teamId}`);
+      }
+    });
+
     socket.on('disconnect', () => {
       socket.leave('leaderboard');
     });
