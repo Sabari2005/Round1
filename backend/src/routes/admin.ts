@@ -15,10 +15,20 @@ const questionSchema = z.object({
     .max(2048)
     .optional()
     .transform((value) => (value ? value : null))
-    .refine((value) => value === null || z.url().safeParse(value).success, 'Invalid image URL'),
-  startingScore: z.number().int().min(1).nullable().optional(),
-  reductionAmount: z.number().int().min(1).nullable().optional(),
-  minimumScore: z.number().int().min(1).nullable().optional()
+    .refine((value) => {
+      if (value === null) {
+        return true;
+      }
+      try {
+        const parsed = new URL(value);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+      } catch {
+        return false;
+      }
+    }, 'Invalid image URL'),
+  startingScore: z.coerce.number().int().min(1).nullable().optional(),
+  reductionAmount: z.coerce.number().int().min(1).nullable().optional(),
+  minimumScore: z.coerce.number().int().min(1).nullable().optional()
 }).superRefine((payload, context) => {
   const rawValues = [payload.startingScore, payload.reductionAmount, payload.minimumScore];
   const definedValues = rawValues.filter((value) => value !== undefined);

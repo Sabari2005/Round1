@@ -230,14 +230,6 @@ export function AdminPanel() {
             {isBroadcasting ? 'Broadcasting...' : 'Broadcast New Question'}
           </button>
         </form>
-
-        <section className="glow-card stack-gap">
-          <span className="label">Database Control</span>
-          <p className="status-text">Delete all registered team users and remove their submissions.</p>
-          <button className="ghost-btn" disabled={isClearingUsers} onClick={clearUsers}>
-            {isClearingUsers ? 'Clearing Users...' : 'Clear All Users'}
-          </button>
-        </section>
       </section>
 
       <section className="glow-card submissions-card">
@@ -270,6 +262,14 @@ export function AdminPanel() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="glow-card stack-gap">
+        <span className="label">Database Control</span>
+        <p className="status-text">Delete all registered team users and remove their submissions.</p>
+        <button className="ghost-btn" disabled={isClearingUsers} onClick={clearUsers}>
+          {isClearingUsers ? 'Clearing Users...' : 'Clear All Users'}
+        </button>
       </section>
 
       {status && <p className="status-text centered">{status}</p>}
