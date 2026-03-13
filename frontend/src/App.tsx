@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { LandingPage } from './pages/LandingPage';
+import { LeaderboardPage } from './pages/LeaderboardPage';
 import { TeamAuthPage } from './pages/TeamAuthPage';
 import { UserDashboard } from './pages/UserDashboard';
 import { AdminLoginPage } from './pages/AdminLoginPage';
@@ -10,6 +11,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route path="/dashboard/auth" element={<TeamAuthPage />} />
         <Route path="/dashboard" element={<UserDashboard />} />
         <Route path="/admin/login" element={<AdminLoginPage />} />

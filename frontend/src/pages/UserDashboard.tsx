@@ -157,9 +157,14 @@ export function UserDashboard() {
           <h2>{session?.name ?? 'Unknown Team'}</h2>
           <span className="label">Signed in as {session?.name ?? 'Unknown Team'}</span>
         </div>
-        <button className="ghost-btn" onClick={logout}>
-          Exit
-        </button>
+        <div className="header-actions">
+          <button className="ghost-btn" onClick={() => navigate('/leaderboard')}>
+            Leaderboard Page
+          </button>
+          <button className="ghost-btn" onClick={logout}>
+            Exit
+          </button>
+        </div>
       </header>
 
       <section className="grid-two">

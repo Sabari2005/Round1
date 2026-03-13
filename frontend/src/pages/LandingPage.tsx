@@ -95,6 +95,9 @@ export function LandingPage() {
           <button className="gold-btn" onClick={() => navigate('/dashboard/auth')}>
             Enter The Platform
           </button>
+          <button className="ghost-btn" onClick={() => navigate('/leaderboard')}>
+            View Leaderboard
+          </button>
         </div>
       </section>
 

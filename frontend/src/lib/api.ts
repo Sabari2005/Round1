@@ -61,6 +61,8 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ username, password })
     }),
+  getPublicLeaderboard: () =>
+    request<{ leaderboard: Array<{ id: string; name: string; totalScore: number }> }>('api/public/leaderboard'),
   getQuestion: () => request<{ question: QuestionDto | null }>('api/user/question'),
   getSubmissionStatus: () =>
     request<{

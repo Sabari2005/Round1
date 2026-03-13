@@ -945,6 +945,12 @@ textarea:focus {
   align-items: center;
 }
 
+.header-actions {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
 .top-header h2,
 .question-card h3 {
   margin: 0.1rem 0;
@@ -987,6 +993,15 @@ textarea:focus {
 
 .centered {
   text-align: center;
+}
+
+.leaderboard-page-only {
+  display: grid;
+  gap: 1rem;
+}
+
+.leaderboard-page-card {
+  min-height: 60vh;
 }
 
 .leaderboard-card table {
