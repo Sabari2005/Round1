@@ -7,6 +7,15 @@ import { socket } from '../lib/socket';
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
 
 type SubmissionState = 'idle' | 'pending' | 'correct' | 'incorrect';
+type DustParticle = {
+  id: number;
+  x: number;
+  y: number;
+  createdAt: number;
+  size: number;
+  dx: number;
+  dy: number;
+};
 
 function buildImageProxyUrl(rawUrl: string, download = false): string {
   const url = new URL('/api/media/image', API_BASE);
@@ -43,6 +52,10 @@ export function UserDashboard() {
   const [submissionState, setSubmissionState] = useState<SubmissionState>('idle');
   const [questionImageSrc, setQuestionImageSrc] = useState<string | null>(null);
   const [imageFallbackStep, setImageFallbackStep] = useState(0);
+  const [cursorDust, setCursorDust] = useState({ x: 0, y: 0, visible: false });
+  const [particles, setParticles] = useState<DustParticle[]>([]);
+
+  const teamRank = session ? leaderboard.findIndex((row) => row.name === session.name) + 1 : 0;
 
   useEffect(() => {
     if (!question?.imageUrl) {
@@ -54,6 +67,48 @@ export function UserDashboard() {
     setQuestionImageSrc(buildImageProxyUrl(question.imageUrl));
     setImageFallbackStep(0);
   }, [question?.imageUrl]);
+
+  useEffect(() => {
+    function handleWindowMove(event: MouseEvent) {
+      const x = event.clientX;
+      const y = event.clientY;
+      const now = Date.now();
+
+      setCursorDust({ x, y, visible: true });
+      setParticles((prev) => {
+        const fresh = prev.filter((particle) => now - particle.createdAt < 700);
+        const particle: DustParticle = {
+          id: now + Math.floor(Math.random() * 100000),
+          x,
+          y,
+          createdAt: now,
+          size: 1.8 + Math.random() * 2.2,
+          dx: (Math.random() - 0.5) * 24,
+          dy: (Math.random() - 0.5) * 24
+        };
+
+        return [...fresh, particle].slice(-48);
+      });
+    }
+
+    function handleWindowLeave() {
+      setCursorDust((prev) => ({ ...prev, visible: false }));
+    }
+
+    const timer = window.setInterval(() => {
+      const now = Date.now();
+      setParticles((prev) => prev.filter((particle) => now - particle.createdAt < 700));
+    }, 90);
+
+    window.addEventListener('mousemove', handleWindowMove);
+    window.addEventListener('mouseout', handleWindowLeave);
+
+    return () => {
+      window.removeEventListener('mousemove', handleWindowMove);
+      window.removeEventListener('mouseout', handleWindowLeave);
+      window.clearInterval(timer);
+    };
+  }, []);
 
   useEffect(() => {
     if (!session || session.role !== 'team') {
@@ -151,6 +206,28 @@ export function UserDashboard() {
 
   return (
     <main className="page dashboard-page">
+      {particles.map((particle) => (
+        <span
+          key={particle.id}
+          className="cursor-particle"
+          style={{
+            left: particle.x,
+            top: particle.y,
+            width: particle.size,
+            height: particle.size,
+            ['--dx' as string]: `${particle.dx}px`,
+            ['--dy' as string]: `${particle.dy}px`
+          }}
+          aria-hidden="true"
+        />
+      ))}
+
+      <div
+        className={`cursor-dust${cursorDust.visible ? ' active' : ''}`}
+        style={{ left: cursorDust.x, top: cursorDust.y }}
+        aria-hidden="true"
+      />
+
       <header className="top-header glow-card">
         <div>
           <span className="label">Team</span>
@@ -166,6 +243,26 @@ export function UserDashboard() {
           </button>
         </div>
       </header>
+
+      <section className="dashboard-summary-grid">
+        <article className="glow-card dashboard-summary-card">
+          <span className="label">Submission State</span>
+          <strong className={`dashboard-state dashboard-state-${submissionState}`}>{submissionState}</strong>
+          <p>{message || 'Stay alert for the next grading update.'}</p>
+        </article>
+        <article className="glow-card dashboard-summary-card">
+          <span className="label">Current Rank</span>
+          <strong className="dashboard-metric">{teamRank > 0 ? `#${teamRank}` : '--'}</strong>
+          <p>{teamRank > 0 ? 'Live rank across all active teams.' : 'Rank will appear once scores are available.'}</p>
+        </article>
+        <article className="glow-card dashboard-summary-card">
+          <span className="label">Question Score Rules</span>
+          <strong className="dashboard-metric">
+            {question ? `${question.startingScore ?? '--'} / ${question.reductionAmount ?? '--'} / ${question.minimumScore ?? '--'}` : '--'}
+          </strong>
+          <p>Starting score, reduction, and minimum score for this question.</p>
+        </article>
+      </section>
 
       <section className="grid-two">
         <article className="glow-card question-card">

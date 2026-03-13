@@ -801,6 +801,54 @@ h4,
   gap: 1rem;
 }
 
+.dashboard-page {
+  position: relative;
+}
+
+.dashboard-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.dashboard-summary-card {
+  min-height: 132px;
+  align-content: start;
+  background:
+    linear-gradient(180deg, rgba(31, 24, 15, 0.92), rgba(14, 11, 8, 0.94)),
+    radial-gradient(circle at top left, rgba(245, 210, 122, 0.12), transparent 38%);
+}
+
+.dashboard-summary-card p {
+  margin: 0.45rem 0 0;
+  color: var(--muted);
+}
+
+.dashboard-metric,
+.dashboard-state {
+  display: block;
+  margin-top: 0.4rem;
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.35rem, 2vw, 2rem);
+  color: var(--gold-bright);
+}
+
+.dashboard-state-idle {
+  color: #e8c879;
+}
+
+.dashboard-state-pending {
+  color: #f0b85a;
+}
+
+.dashboard-state-correct {
+  color: #9fe39b;
+}
+
+.dashboard-state-incorrect {
+  color: #ff9e8c;
+}
+
 .glow-card {
   background: var(--card);
   border: 1px solid var(--line);
@@ -960,6 +1008,13 @@ textarea:focus {
   margin-top: 0.9rem;
   display: grid;
   gap: 0.7rem;
+}
+
+.question-card,
+.leaderboard-card {
+  background:
+    linear-gradient(180deg, rgba(30, 22, 14, 0.9), rgba(13, 10, 7, 0.94)),
+    radial-gradient(circle at top right, rgba(245, 210, 122, 0.1), transparent 34%);
 }
 
 .question-image {
@@ -1254,6 +1309,10 @@ textarea:focus {
 
 @media (max-width: 900px) {
   .grid-two {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-summary-grid {
     grid-template-columns: 1fr;
   }
 
