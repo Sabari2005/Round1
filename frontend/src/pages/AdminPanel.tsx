@@ -18,6 +18,12 @@ export function AdminPanel() {
   const session = useMemo(() => getSession(), []);
   const [title, setTitle] = useState('');
   const [prompt, setPrompt] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [questionScoring, setQuestionScoring] = useState({
+    startingScore: '',
+    reductionAmount: '',
+    minimumScore: ''
+  });
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [status, setStatus] = useState('');
   const [isBroadcasting, setIsBroadcasting] = useState(false);
@@ -62,9 +68,30 @@ export function AdminPanel() {
     setIsBroadcasting(true);
     setStatus('');
     try {
-      const response = await api.updateQuestion(title, prompt);
+      const parseOptionalNumber = (value: string): number | null => {
+        const trimmed = value.trim();
+        if (!trimmed) {
+          return null;
+        }
+        const parsed = Number(trimmed);
+        if (!Number.isFinite(parsed)) {
+          throw new Error('Question scoring fields must be valid numbers');
+        }
+        return parsed;
+      };
+
+      const response = await api.updateQuestion({
+        title,
+        prompt,
+        imageUrl: imageUrl.trim() || null,
+        startingScore: parseOptionalNumber(questionScoring.startingScore),
+        reductionAmount: parseOptionalNumber(questionScoring.reductionAmount),
+        minimumScore: parseOptionalNumber(questionScoring.minimumScore)
+      });
       setTitle('');
       setPrompt('');
+      setImageUrl('');
+      setQuestionScoring({ startingScore: '', reductionAmount: '', minimumScore: '' });
       setSubmissions(response.submissions);
       setStatus('Question updated and broadcasted live.');
     } catch (error) {
@@ -159,6 +186,57 @@ export function AdminPanel() {
             rows={6}
             required
           />
+          <input
+            placeholder="Image URL (optional)"
+            value={imageUrl}
+            onChange={(event) => setImageUrl(event.target.value)}
+          />
+          <span className="label">Question-Specific Scoring (optional)</span>
+          <label className="field-label">
+            Starting Score
+            <input
+              type="number"
+              min={1}
+              placeholder="Uses global config when left blank"
+              value={questionScoring.startingScore}
+              onChange={(event) =>
+                setQuestionScoring((prev) => ({
+                  ...prev,
+                  startingScore: event.target.value
+                }))
+              }
+            />
+          </label>
+          <label className="field-label">
+            Reduction Amount
+            <input
+              type="number"
+              min={1}
+              placeholder="Uses global config when left blank"
+              value={questionScoring.reductionAmount}
+              onChange={(event) =>
+                setQuestionScoring((prev) => ({
+                  ...prev,
+                  reductionAmount: event.target.value
+                }))
+              }
+            />
+          </label>
+          <label className="field-label">
+            Minimum Score
+            <input
+              type="number"
+              min={1}
+              placeholder="Uses global config when left blank"
+              value={questionScoring.minimumScore}
+              onChange={(event) =>
+                setQuestionScoring((prev) => ({
+                  ...prev,
+                  minimumScore: event.target.value
+                }))
+              }
+            />
+          </label>
           <button className="gold-btn" disabled={isBroadcasting}>
             {isBroadcasting ? 'Broadcasting...' : 'Broadcast New Question'}
           </button>

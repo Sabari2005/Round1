@@ -1,5 +1,24 @@
 const API_BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
 
+type QuestionDto = {
+  id: string;
+  title: string;
+  prompt: string;
+  imageUrl: string | null;
+  startingScore: number | null;
+  reductionAmount: number | null;
+  minimumScore: number | null;
+};
+
+type QuestionUpdatePayload = {
+  title: string;
+  prompt: string;
+  imageUrl: string | null;
+  startingScore: number | null;
+  reductionAmount: number | null;
+  minimumScore: number | null;
+};
+
 function getToken(): string | null {
   return sessionStorage.getItem('genie_token') ?? localStorage.getItem('genie_token');
 }
@@ -42,7 +61,7 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ username, password })
     }),
-  getQuestion: () => request<{ question: { id: string; title: string; prompt: string } | null }>('api/user/question'),
+  getQuestion: () => request<{ question: QuestionDto | null }>('api/user/question'),
   submitAnswer: (answer: string) =>
     request<{ submissionId: string }>('api/user/submit', {
       method: 'POST',
@@ -50,9 +69,9 @@ export const api = {
     }),
   getLeaderboard: () =>
     request<{ leaderboard: Array<{ id: string; name: string; totalScore: number }> }>('api/user/leaderboard'),
-  updateQuestion: (title: string, prompt: string) =>
+  updateQuestion: (payload: QuestionUpdatePayload) =>
     request<{
-      question: { id: string; title: string; prompt: string };
+      question: QuestionDto;
       submissions: Array<{
         id: string;
         answer: string;
@@ -63,7 +82,7 @@ export const api = {
       }>;
     }>('api/admin/question', {
       method: 'PUT',
-      body: JSON.stringify({ title, prompt })
+      body: JSON.stringify(payload)
     }),
   getSubmissions: () =>
     request<{

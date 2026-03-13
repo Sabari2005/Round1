@@ -20,6 +20,22 @@ export async function ensureScoringConfig() {
 
 export async function recomputeQuestionScores(questionId: string): Promise<void> {
   const config = await ensureScoringConfig();
+  const question = await prisma.question.findUnique({
+    where: { id: questionId },
+    select: {
+      startingScore: true,
+      reductionAmount: true,
+      minimumScore: true
+    }
+  });
+
+  if (!question) {
+    return;
+  }
+
+  const startingScore = question.startingScore ?? config.startingScore;
+  const reductionAmount = question.reductionAmount ?? config.reductionAmount;
+  const minimumScore = question.minimumScore ?? config.minimumScore;
 
   const submissions = await prisma.submission.findMany({
     where: {
@@ -31,7 +47,7 @@ export async function recomputeQuestionScores(questionId: string): Promise<void>
 
   await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     for (const [index, submission] of submissions.entries()) {
-      const score = Math.max(config.startingScore - index * config.reductionAmount, config.minimumScore);
+      const score = Math.max(startingScore - index * reductionAmount, minimumScore);
       await tx.submission.update({
         where: { id: submission.id },
         data: {

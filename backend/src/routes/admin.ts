@@ -8,7 +8,52 @@ import { ensureScoringConfig, recomputeQuestionScores } from '../services/scorin
 
 const questionSchema = z.object({
   title: z.string().min(2).max(120),
-  prompt: z.string().min(4).max(2500)
+  prompt: z.string().min(4).max(2500),
+  imageUrl: z
+    .string()
+    .trim()
+    .max(2048)
+    .optional()
+    .transform((value) => (value ? value : null))
+    .refine((value) => value === null || z.url().safeParse(value).success, 'Invalid image URL'),
+  startingScore: z.number().int().min(1).nullable().optional(),
+  reductionAmount: z.number().int().min(1).nullable().optional(),
+  minimumScore: z.number().int().min(1).nullable().optional()
+}).superRefine((payload, context) => {
+  const rawValues = [payload.startingScore, payload.reductionAmount, payload.minimumScore];
+  const definedValues = rawValues.filter((value) => value !== undefined);
+
+  if (definedValues.length > 0 && definedValues.length < 3) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Provide all question scoring fields or leave all blank'
+    });
+    return;
+  }
+
+  if (definedValues.length === 3) {
+    const values = rawValues as Array<number | null>;
+    const hasAnyNull = values.some((value) => value === null);
+    const hasAllNull = values.every((value) => value === null);
+
+    if (hasAnyNull && !hasAllNull) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'To use default scoring, clear all question scoring fields'
+      });
+      return;
+    }
+
+    if (!hasAllNull) {
+      const [startingScore, , minimumScore] = values as number[];
+      if (minimumScore > startingScore) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Question minimum score cannot be greater than question starting score'
+        });
+      }
+    }
+  }
 });
 
 const submissionScoreSchema = z.object({
@@ -38,6 +83,10 @@ adminRouter.put('/question', async (req, res, next) => {
       data: {
         title: payload.title,
         prompt: payload.prompt,
+        imageUrl: payload.imageUrl,
+        startingScore: payload.startingScore,
+        reductionAmount: payload.reductionAmount,
+        minimumScore: payload.minimumScore,
         isActive: true
       }
     });

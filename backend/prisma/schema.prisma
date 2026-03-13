@@ -33,6 +33,10 @@ model Question {
   id          String       @id @default(cuid())
   title       String
   prompt      String
+  imageUrl    String?
+  startingScore   Int?
+  reductionAmount Int?
+  minimumScore    Int?
   isActive    Boolean      @default(true)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt

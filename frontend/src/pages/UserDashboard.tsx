@@ -4,7 +4,15 @@ import { api } from '../lib/api';
 import { clearSession, getSession } from '../lib/auth';
 import { socket } from '../lib/socket';
 
-type Question = { id: string; title: string; prompt: string } | null;
+type Question = {
+  id: string;
+  title: string;
+  prompt: string;
+  imageUrl: string | null;
+  startingScore: number | null;
+  reductionAmount: number | null;
+  minimumScore: number | null;
+} | null;
 type BoardRow = { id: string; name: string; totalScore: number };
 
 export function UserDashboard() {
@@ -79,6 +87,14 @@ export function UserDashboard() {
           <span className="label">Current Question</span>
           <h3>{question?.title ?? 'Awaiting the next magical challenge'}</h3>
           <p>{question?.prompt ?? 'The lamp is silent for now.'}</p>
+          {question?.imageUrl && (
+            <div className="question-image-wrap">
+              <img className="question-image" src={question.imageUrl} alt={question.title} />
+              <a className="ghost-btn" href={question.imageUrl} download target="_blank" rel="noreferrer">
+                Download Image
+              </a>
+            </div>
+          )}
         </article>
 
         <article className="glow-card">
