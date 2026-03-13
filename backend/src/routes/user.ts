@@ -161,6 +161,7 @@ userRouter.post('/submit', async (req: RequestWithUser, res, next) => {
     const submission = await prisma.submission.create({
       data: {
         answer: payload.answer,
+        createdAt: new Date(),
         teamId,
         questionId: question.id,
         isCorrect: null,

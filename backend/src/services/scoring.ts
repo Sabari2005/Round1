@@ -46,8 +46,16 @@ export async function recomputeQuestionScores(questionId: string): Promise<void>
   });
 
   await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-    for (const [index, submission] of submissions.entries()) {
-      const score = Math.max(startingScore - index * reductionAmount, minimumScore);
+    let scoreGroupIndex = 0;
+    let previousTimestamp: number | null = null;
+
+    for (const submission of submissions) {
+      const currentTimestamp = submission.createdAt.getTime();
+      if (previousTimestamp !== null && currentTimestamp !== previousTimestamp) {
+        scoreGroupIndex += 1;
+      }
+
+      const score = Math.max(startingScore - scoreGroupIndex * reductionAmount, minimumScore);
       await tx.submission.update({
         where: { id: submission.id },
         data: {
@@ -55,6 +63,8 @@ export async function recomputeQuestionScores(questionId: string): Promise<void>
           scoredAt: new Date()
         }
       });
+
+      previousTimestamp = currentTimestamp;
     }
 
     await tx.team.updateMany({ data: { totalScore: 0 } });

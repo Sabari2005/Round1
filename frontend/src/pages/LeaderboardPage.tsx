@@ -43,26 +43,28 @@ export function LeaderboardPage() {
       <section className="glow-card leaderboard-card leaderboard-page-card">
         <div className="leaderboard-title-row">
           <span className="label">Current Standings</span>
-          <span className="lamp-icon">Lamp</span>
+          <span className="lamp-icon">Teams: {leaderboard.length}</span>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>Team</th>
-              <th>Score</th>
-            </tr>
-          </thead>
-          <tbody>
-            {leaderboard.map((row, index) => (
-              <tr key={row.id}>
-                <td>{index + 1}</td>
-                <td>{row.name}</td>
-                <td>{row.totalScore}</td>
+        <div className="leaderboard-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Team</th>
+                <th>Score</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {leaderboard.map((row, index) => (
+                <tr key={row.id}>
+                  <td>{index + 1}</td>
+                  <td>{row.name}</td>
+                  <td>{row.totalScore}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         {leaderboard.length === 0 && <p className="status-text">No scores have been recorded yet.</p>}
       </section>
     </main>
