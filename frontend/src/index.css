@@ -1020,6 +1020,28 @@ textarea:focus {
   margin-bottom: 0.8rem;
 }
 
+.admin-side-panel {
+  display: grid;
+  align-content: start;
+}
+
+.admin-tab-row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.9rem;
+}
+
+.admin-tab-row .gold-btn,
+.admin-tab-row .ghost-btn {
+  width: auto;
+}
+
+.admin-leaderboard-panel {
+  display: grid;
+  align-content: start;
+}
+
 .submission-list {
   display: grid;
   gap: 0.8rem;

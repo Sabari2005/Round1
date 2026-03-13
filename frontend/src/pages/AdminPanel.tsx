@@ -13,6 +13,12 @@ type Submission = {
   team: { name: string };
 };
 
+type LeaderboardRow = {
+  id: string;
+  name: string;
+  totalScore: number;
+};
+
 export function AdminPanel() {
   const navigate = useNavigate();
   const session = useMemo(() => getSession(), []);
@@ -25,6 +31,8 @@ export function AdminPanel() {
     minimumScore: ''
   });
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardRow[]>([]);
+  const [activeTab, setActiveTab] = useState<'submissions' | 'leaderboard'>('submissions');
   const [status, setStatus] = useState('');
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const [isClearingUsers, setIsClearingUsers] = useState(false);
@@ -37,7 +45,9 @@ export function AdminPanel() {
     }
 
     void api.getSubmissions().then((data) => setSubmissions(data.submissions));
+    void api.getLeaderboard().then((data) => setLeaderboard(data.leaderboard));
     socket.connect();
+    socket.emit('leaderboard:join');
     socket.on('submission:new', () => {
       void api.getSubmissions().then((data) => setSubmissions(data.submissions));
     });
@@ -47,11 +57,16 @@ export function AdminPanel() {
     socket.on('question:update', () => {
       setSubmissions([]);
     });
+    socket.on('leaderboard:update', (rows: LeaderboardRow[]) => {
+      setLeaderboard(rows);
+    });
 
     return () => {
       socket.off('submission:new');
       socket.off('submission:update');
       socket.off('question:update');
+      socket.off('leaderboard:update');
+      socket.emit('leaderboard:leave');
       socket.disconnect();
     };
   }, [navigate, session]);
@@ -108,6 +123,7 @@ export function AdminPanel() {
     try {
       const response = await api.scoreSubmission(id, isCorrect);
       setSubmissions(response.submissions);
+      setLeaderboard(response.leaderboard);
       setStatus('Submission scoring updated.');
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Failed to score submission');
@@ -131,6 +147,7 @@ export function AdminPanel() {
     try {
       const response = await api.clearTeams();
       setSubmissions(response.submissions);
+      setLeaderboard(response.leaderboard);
       setStatus(`Cleared ${response.deletedTeams} team users.`);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'Failed to clear users');
@@ -230,38 +247,86 @@ export function AdminPanel() {
             {isBroadcasting ? 'Broadcasting...' : 'Broadcast New Question'}
           </button>
         </form>
-      </section>
 
-      <section className="glow-card submissions-card">
-        <span className="label">Submitted Answers</span>
-        <div className="submission-list">
-          {submissions.map((submission) => (
-            <article key={submission.id} className="submission-item">
-              <header>
-                <strong>{submission.team.name}</strong>
-                <span>{new Date(submission.createdAt).toLocaleTimeString()}</span>
-              </header>
-              <p>{submission.answer}</p>
-              <div className="submission-actions">
-                <button
-                  className="gold-btn"
-                  disabled={gradingSubmissionId !== null}
-                  onClick={() => markSubmission(submission.id, true)}
-                >
-                  {gradingSubmissionId === submission.id ? 'Grading...' : 'Mark Correct'}
-                </button>
-                <button
-                  className="ghost-btn"
-                  disabled={gradingSubmissionId !== null}
-                  onClick={() => markSubmission(submission.id, false)}
-                >
-                  Mark Incorrect
-                </button>
-                <span className="score-pill">{submission.awardedScore ?? 0} pts</span>
+        <section className="glow-card submissions-card admin-side-panel">
+          <div className="admin-tab-row">
+            <button
+              className={activeTab === 'submissions' ? 'gold-btn' : 'ghost-btn'}
+              onClick={() => setActiveTab('submissions')}
+              type="button"
+            >
+              Submitted Answers
+            </button>
+            <button
+              className={activeTab === 'leaderboard' ? 'gold-btn' : 'ghost-btn'}
+              onClick={() => setActiveTab('leaderboard')}
+              type="button"
+            >
+              Leaderboard
+            </button>
+          </div>
+
+          {activeTab === 'submissions' ? (
+            <>
+              <span className="label">Submitted Answers</span>
+              <div className="submission-list">
+                {submissions.map((submission) => (
+                  <article key={submission.id} className="submission-item">
+                    <header>
+                      <strong>{submission.team.name}</strong>
+                      <span>{new Date(submission.createdAt).toLocaleTimeString()}</span>
+                    </header>
+                    <p>{submission.answer}</p>
+                    <div className="submission-actions">
+                      <button
+                        className="gold-btn"
+                        disabled={gradingSubmissionId !== null}
+                        onClick={() => markSubmission(submission.id, true)}
+                      >
+                        {gradingSubmissionId === submission.id ? 'Grading...' : 'Mark Correct'}
+                      </button>
+                      <button
+                        className="ghost-btn"
+                        disabled={gradingSubmissionId !== null}
+                        onClick={() => markSubmission(submission.id, false)}
+                      >
+                        Mark Incorrect
+                      </button>
+                      <span className="score-pill">{submission.awardedScore ?? 0} pts</span>
+                    </div>
+                  </article>
+                ))}
+                {submissions.length === 0 && <p className="status-text">No pending submissions for the active question.</p>}
               </div>
-            </article>
-          ))}
-        </div>
+            </>
+          ) : (
+            <section className="leaderboard-card admin-leaderboard-panel">
+              <div className="leaderboard-title-row">
+                <span className="label">Leaderboard</span>
+                <span className="lamp-icon">Lamp</span>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Team</th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {leaderboard.map((row, index) => (
+                    <tr key={row.id}>
+                      <td>{index + 1}</td>
+                      <td>{row.name}</td>
+                      <td>{row.totalScore}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {leaderboard.length === 0 && <p className="status-text">Leaderboard is empty right now.</p>}
+            </section>
+          )}
+        </section>
       </section>
 
       <section className="glow-card stack-gap">
