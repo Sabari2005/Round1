@@ -56,6 +56,322 @@ h4,
   padding-bottom: 3rem;
 }
 
+.landing-page::before,
+.landing-page::after {
+  display: none;
+}
+
+.landing-page::before {
+  display: none;
+}
+
+.landing-page::after {
+  display: none;
+}
+
+.map-landing-page {
+  width: min(1060px, calc(100vw - 1.5rem));
+  min-height: 100vh;
+  padding-top: 1.2rem;
+  padding-bottom: 2.2rem;
+  background: transparent;
+  border-radius: 0;
+  position: relative;
+  overflow: visible;
+  z-index: 1;
+}
+
+.map-landing-page::before,
+.map-landing-page::after {
+  display: none;
+}
+
+.map-poster-shell {
+  position: relative;
+  margin: 0 auto;
+  max-width: 960px;
+  border-radius: 0;
+  overflow: visible;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  z-index: 1;
+}
+
+.map-poster-shell::before,
+.map-poster-shell::after {
+  display: none;
+}
+
+.map-poster-shell::before {
+  inset: -20% -12%;
+  background:
+    radial-gradient(2px 2px at 18% 26%, rgba(255, 229, 169, 0.78) 45%, transparent 47%),
+    radial-gradient(1.5px 1.5px at 62% 38%, rgba(255, 212, 131, 0.7) 45%, transparent 47%),
+    radial-gradient(2.2px 2.2px at 76% 72%, rgba(245, 197, 99, 0.78) 45%, transparent 47%),
+    radial-gradient(1.5px 1.5px at 34% 68%, rgba(255, 236, 186, 0.75) 45%, transparent 47%);
+  opacity: 0.36;
+  animation: dustDrift 12s linear infinite;
+}
+
+.map-poster-shell::after {
+  inset: -2% -1%;
+  background: linear-gradient(112deg, transparent 14%, rgba(255, 224, 151, 0.09) 38%, transparent 62%);
+  mix-blend-mode: screen;
+  animation: mapShimmer 5.8s ease-in-out infinite;
+}
+
+.map-poster-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 0;
+  filter: sepia(0.2) saturate(1.05) contrast(1.02);
+  transform-origin: center;
+  animation: mapFloat 7.5s ease-in-out infinite;
+  box-shadow: none;
+}
+
+.map-poster-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 120%, rgba(0, 0, 0, 0.72), transparent 42%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.35) 70%, rgba(0, 0, 0, 0.7));
+}
+
+.map-story-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.map-story-overlay,
+.map-poster-vignette {
+  display: none;
+}
+
+.cursor-dust {
+  position: fixed;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  border-radius: 999px;
+  transform: translate(-50%, -50%) scale(0.8);
+  opacity: 0;
+  background: radial-gradient(circle, rgba(255, 230, 163, 0.95), rgba(226, 167, 64, 0.35) 48%, transparent 72%);
+  filter: blur(0.3px);
+  z-index: 9998;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.cursor-dust::before,
+.cursor-dust::after {
+  content: '';
+  position: absolute;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.cursor-dust::before {
+  width: 22px;
+  height: 22px;
+  top: -4px;
+  left: -4px;
+  background: radial-gradient(circle, rgba(255, 220, 140, 0.24), transparent 65%);
+}
+
+.cursor-dust::after {
+  width: 34px;
+  height: 34px;
+  top: -10px;
+  left: -10px;
+  background:
+    radial-gradient(1.2px 1.2px at 38% 42%, rgba(255, 232, 176, 0.75) 45%, transparent 47%),
+    radial-gradient(1px 1px at 66% 58%, rgba(244, 193, 96, 0.75) 45%, transparent 47%),
+    radial-gradient(0.9px 0.9px at 52% 34%, rgba(255, 224, 150, 0.65) 45%, transparent 47%);
+  animation: cursorDustSpin 1.6s linear infinite;
+}
+
+.cursor-dust.active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.cursor-particle {
+  position: fixed;
+  pointer-events: none;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 236, 185, 0.95), rgba(239, 188, 92, 0.65));
+  box-shadow: 0 0 6px rgba(247, 210, 134, 0.55);
+  transform: translate(-50%, -50%);
+  z-index: 9997;
+  animation: particleEmit 0.7s ease-out forwards;
+}
+
+.landing-top-copy {
+  max-width: 960px;
+  margin: 0 auto 1rem;
+  text-align: center;
+}
+
+.landing-top-copy .notice-kicker {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.landing-top-copy .notice-dept {
+  margin-top: 0;
+}
+
+.landing-top-copy .magic-title {
+  margin-top: 0.4rem;
+  margin-bottom: 0.2rem;
+}
+
+.landing-top-copy .magic-subtitle {
+  margin: 0.2rem auto 0;
+  text-align: center;
+}
+
+.map-undertext {
+  max-width: 960px;
+  margin: 0.8rem auto 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 1.2rem;
+}
+
+.map-route {
+  position: absolute;
+  border: 2px dashed rgba(97, 64, 26, 0.75);
+  border-radius: 999px;
+  filter: drop-shadow(0 0 4px rgba(255, 218, 136, 0.18));
+  animation: pathPulse 6s ease-in-out infinite;
+}
+
+.route-a {
+  left: 8%;
+  bottom: 20%;
+  width: 31%;
+  height: 26%;
+  transform: rotate(-14deg);
+}
+
+.route-b {
+  left: 44%;
+  top: 24%;
+  width: 27%;
+  height: 19%;
+  transform: rotate(16deg);
+  animation-delay: 1.2s;
+}
+
+.route-c {
+  right: 9%;
+  bottom: 16%;
+  width: 21%;
+  height: 28%;
+  transform: rotate(10deg);
+  animation-delay: 2.4s;
+}
+
+.footprint {
+  position: absolute;
+  width: 10px;
+  height: 18px;
+  border-radius: 50% 50% 45% 45%;
+  background: rgba(72, 44, 18, 0.72);
+  box-shadow: 0 0 0 1px rgba(233, 190, 104, 0.16);
+  animation: stepGlow 4.2s ease-in-out infinite;
+}
+
+.footprint::before,
+.footprint::after {
+  content: '';
+  position: absolute;
+  border-radius: 999px;
+  background: rgba(82, 51, 23, 0.74);
+}
+
+.footprint::before {
+  width: 6px;
+  height: 6px;
+  top: -5px;
+  left: 1px;
+}
+
+.footprint::after {
+  width: 4px;
+  height: 4px;
+  top: -7px;
+  right: 1px;
+}
+
+.trail-a.step-1 {
+  left: 18%;
+  bottom: 27%;
+  transform: rotate(-22deg);
+}
+
+.trail-a.step-2 {
+  left: 24%;
+  bottom: 31%;
+  transform: rotate(-14deg);
+  animation-delay: 0.4s;
+}
+
+.trail-a.step-3 {
+  left: 30%;
+  bottom: 34%;
+  transform: rotate(-24deg);
+  animation-delay: 0.8s;
+}
+
+.trail-b.step-1 {
+  right: 21%;
+  bottom: 24%;
+  transform: rotate(16deg);
+  animation-delay: 1.1s;
+}
+
+.trail-b.step-2 {
+  right: 16%;
+  bottom: 29%;
+  transform: rotate(8deg);
+  animation-delay: 1.5s;
+}
+
+.trail-b.step-3 {
+  right: 12%;
+  bottom: 34%;
+  transform: rotate(18deg);
+  animation-delay: 1.9s;
+}
+
+.map-poster-actions {
+  position: absolute;
+  left: 50%;
+  bottom: 3%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  z-index: 2;
+}
+
+.map-poster-actions .gold-btn,
+.map-poster-actions .ghost-btn {
+  min-width: 180px;
+  font-size: 0.86rem;
+  letter-spacing: 0.08em;
+  backdrop-filter: blur(2px);
+}
+
 .magic-bg {
   position: absolute;
   inset: 0;
@@ -252,6 +568,31 @@ h4,
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
+}
+
+.rule-scroll-card {
+  display: grid;
+  place-items: center;
+}
+
+.rule-scroll-card-wide {
+  grid-column: 1 / -1;
+}
+
+.rule-scroll-image {
+  width: min(100%, 430px);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 26px rgba(0, 0, 0, 0.42));
+  animation: scrollFloat 4.8s ease-in-out infinite;
+}
+
+.rule-scroll-card:nth-child(2) .rule-scroll-image {
+  animation-delay: 1.2s;
+}
+
+.rule-scroll-card:nth-child(3) .rule-scroll-image {
+  animation-delay: 2s;
 }
 
 .parchment-panel {
@@ -473,6 +814,93 @@ h4,
   margin: 10vh auto 0;
 }
 
+.auth-magic-page {
+  width: min(100%, calc(100vw - 1.5rem));
+  min-height: 100vh;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  position: relative;
+  overflow: hidden;
+  padding-top: 0;
+  padding-bottom: 0;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(237, 188, 90, 0.16), transparent 25%),
+    radial-gradient(circle at 80% 20%, rgba(212, 157, 60, 0.13), transparent 24%),
+    linear-gradient(180deg, rgba(7, 6, 5, 0.95), rgba(13, 10, 7, 0.96));
+}
+
+.auth-magic-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(1.3px 1.3px at 12% 24%, rgba(251, 224, 164, 0.5) 45%, transparent 47%),
+    radial-gradient(1.1px 1.1px at 74% 32%, rgba(244, 199, 109, 0.48) 45%, transparent 47%),
+    radial-gradient(1.2px 1.2px at 38% 84%, rgba(255, 229, 169, 0.45) 45%, transparent 47%);
+  opacity: 0.38;
+}
+
+.auth-scroll-card {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 540px);
+  margin: 0;
+  backdrop-filter: blur(2px);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 228, 162, 0.1),
+    0 0 26px rgba(246, 198, 101, 0.16),
+    0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+.auth-scroll-card h2 {
+  margin: 0.4rem 0 0.4rem;
+}
+
+.auth-scroll-card .status-text {
+  margin: 0 0 0.8rem;
+}
+
+.auth-scroll-card .gold-btn,
+.auth-scroll-card .ghost-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.auth-scroll-card > .ghost-btn {
+  margin-top: 0.7rem;
+}
+
+.auth-cursor-dust {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  border-radius: 999px;
+  transform: translate(-50%, -50%) scale(0.8);
+  opacity: 0;
+  background: radial-gradient(circle, rgba(255, 234, 182, 0.95), rgba(232, 178, 79, 0.4) 52%, transparent 72%);
+  z-index: 4;
+  transition: opacity 0.16s ease, transform 0.15s ease;
+}
+
+.auth-cursor-dust.active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.auth-cursor-particle {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255, 236, 186, 0.95), rgba(244, 194, 98, 0.7));
+  box-shadow: 0 0 5px rgba(247, 212, 138, 0.5);
+  z-index: 3;
+  animation: particleEmit 0.65s ease-out forwards;
+}
+
 .stack-gap {
   display: grid;
   gap: 0.8rem;
@@ -487,6 +915,7 @@ h4,
 
 input,
 textarea {
+  width: 100%;
   border-radius: 12px;
   border: 1px solid var(--line);
   background: rgba(8, 7, 5, 0.75);
@@ -655,9 +1084,167 @@ textarea:focus {
   }
 }
 
+@keyframes dustDrift {
+  from {
+    transform: translateY(0) scale(1);
+  }
+  to {
+    transform: translateY(-20px) scale(1.03);
+  }
+}
+
+@keyframes mapShimmer {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: translateX(-12%);
+  }
+  50% {
+    opacity: 0.55;
+    transform: translateX(12%);
+  }
+}
+
+@keyframes mapFloat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.012);
+  }
+}
+
+@keyframes scrollFloat {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes cursorDustSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes particleEmit {
+  0% {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, 0px))) scale(0.15);
+  }
+}
+
+@keyframes pathPulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes stepGlow {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+.landing-notice-content {
+  max-width: 960px;
+  margin: 1.2rem auto 0;
+  padding: 1rem 0.2rem 0;
+  position: relative;
+  z-index: 1;
+}
+
+.landing-notice-content .notice-header {
+  margin-bottom: 1rem;
+}
+
+.landing-notice-content .rules-grid {
+  margin-top: 0.8rem;
+}
+
+.landing-notice-content .notice-footer {
+  margin-bottom: 0.4rem;
+}
+
 @media (max-width: 900px) {
   .grid-two {
     grid-template-columns: 1fr;
+  }
+
+  .map-landing-page {
+    width: calc(100vw - 0.5rem);
+    padding-top: 0.45rem;
+    border-radius: 14px;
+  }
+
+  .auth-magic-page {
+    width: calc(100vw - 0.6rem);
+    align-content: start;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+  }
+
+  .auth-scroll-card {
+    width: min(100%, 520px);
+  }
+
+  .map-poster-shell {
+    max-width: none;
+    border-radius: 0;
+  }
+
+  .map-poster-actions {
+    bottom: 2%;
+    gap: 0.55rem;
+    width: calc(100% - 0.8rem);
+  }
+
+  .map-poster-actions .gold-btn,
+  .map-poster-actions .ghost-btn {
+    min-width: 148px;
+    padding: 0.62rem 0.9rem;
+    font-size: 0.78rem;
+  }
+
+  .map-route {
+    border-width: 1px;
+  }
+
+  .rule-scroll-image {
+    width: min(100%, 350px);
+  }
+
+  .landing-top-copy {
+    margin-bottom: 0.7rem;
+  }
+
+  .map-undertext {
+    font-size: 1.02rem;
+    margin-top: 0.65rem;
+  }
+
+  .footprint {
+    width: 8px;
+    height: 14px;
   }
 
   .rules-grid {
@@ -674,6 +1261,12 @@ textarea:focus {
 
   .scroll-seal {
     display: none;
+  }
+
+  .landing-notice-content {
+    width: 100%;
+    margin-top: 0.9rem;
+    padding: 0.5rem 0;
   }
 
   .page {

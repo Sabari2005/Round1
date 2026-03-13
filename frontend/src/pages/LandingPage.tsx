@@ -1,101 +1,118 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LampEmblem } from '../components/LampEmblem';
 
-const eventRounds = [
-  {
-    title: 'Round 1: Digital Scavenger Hunt (OSINT)',
-    accent: 'Clues in the open world',
-    items: [
-      'Questions displayed on screen',
-      'Explore social media, Google searches, and forums to find clues',
-      'Time limit: 45 minutes',
-      'Exact answer verification required',
-      'Open access to the internet allowed'
-    ]
-  },
-  {
-    title: 'Round 2: Chat with Genie (Prompt Injection)',
-    accent: 'A guarded conversation',
-    items: [
-      'Interact with a chat Genie (LLM)',
-      'Objective: extract the secret password from the Genie',
-      'Genie has pre-defined constraints',
-      'Disallowed prompt content rules apply, including no personal attacks',
-      'Prizes for top 3 passwords found'
-    ]
-  }
-];
-
-const generalRules = [
-  'Team size: 1-2 members',
-  'All members must present student ID',
-  "Judge's decision final and binding",
-  'Prizes awarded as stated on the main poster'
-];
+type DustParticle = {
+  id: number;
+  x: number;
+  y: number;
+  createdAt: number;
+  size: number;
+  dx: number;
+  dy: number;
+};
 
 export function LandingPage() {
   const navigate = useNavigate();
+  const [cursorDust, setCursorDust] = useState({ x: 0, y: 0, visible: false });
+  const [particles, setParticles] = useState<DustParticle[]>([]);
+
+  useEffect(() => {
+    function handleWindowMove(event: MouseEvent) {
+      const x = event.clientX;
+      const y = event.clientY;
+      const now = Date.now();
+
+      setCursorDust({ x, y, visible: true });
+
+      setParticles((prev) => {
+        const fresh = prev.filter((particle) => now - particle.createdAt < 700);
+        const particle: DustParticle = {
+          id: now + Math.floor(Math.random() * 100000),
+          x,
+          y,
+          createdAt: now,
+          size: 1.8 + Math.random() * 2.2,
+          dx: (Math.random() - 0.5) * 24,
+          dy: (Math.random() - 0.5) * 24
+        };
+
+        return [...fresh, particle].slice(-48);
+      });
+    }
+
+    function handleWindowLeave() {
+      setCursorDust((prev) => ({ ...prev, visible: false }));
+    }
+
+    const timer = window.setInterval(() => {
+      const now = Date.now();
+      setParticles((prev) => prev.filter((particle) => now - particle.createdAt < 700));
+    }, 90);
+
+    window.addEventListener('mousemove', handleWindowMove);
+    window.addEventListener('mouseout', handleWindowLeave);
+
+    return () => {
+      window.removeEventListener('mousemove', handleWindowMove);
+      window.removeEventListener('mouseout', handleWindowLeave);
+      window.clearInterval(timer);
+    };
+  }, []);
 
   return (
-    <main className="page landing-page">
-      <div className="magic-bg map-bg" aria-hidden="true" />
-      <div className="map-dust map-dust-a" aria-hidden="true" />
-      <div className="map-dust map-dust-b" aria-hidden="true" />
+    <main className="page landing-page map-landing-page">
+      {particles.map((particle) => (
+        <span
+          key={particle.id}
+          className="cursor-particle"
+          style={{
+            left: particle.x,
+            top: particle.y,
+            width: particle.size,
+            height: particle.size,
+            ['--dx' as string]: `${particle.dx}px`,
+            ['--dy' as string]: `${particle.dy}px`
+          }}
+          aria-hidden="true"
+        />
+      ))}
 
-      <section className="hero-scroll">
-        <div className="scroll-seal left" aria-hidden="true" />
-        <div className="scroll-seal right" aria-hidden="true" />
+      <div
+        className={`cursor-dust${cursorDust.visible ? ' active' : ''}`}
+        style={{ left: cursorDust.x, top: cursorDust.y }}
+        aria-hidden="true"
+      />
 
-        <header className="notice-header">
-          <p className="notice-kicker">Manakula Vinayagar Institute of Technology</p>
-          <p className="notice-dept">Department of Computer Science and Engineering</p>
-          <div className="notice-emblem-row">
-            <LampEmblem />
-            <div>
-              <h1 className="magic-title">Rules and Regulations</h1>
-              <p className="event-mark">captcha&apos;26</p>
-              <p className="mind-crash-mark">Mind Crash</p>
-            </div>
-          </div>
-          <p className="magic-subtitle parchment-copy">
-            An enchanted notice from the old chamber. Read every line with care before stepping into the trial.
-          </p>
-        </header>
+      <section className="landing-top-copy">
+        <p className="notice-kicker">The Marauder Scroll of Mind Crash</p>
+        <p className="notice-dept">Department of Computer Science &amp; Engineering</p>
+        <h1 className="magic-title">Mind Crash</h1>
+      </section>
 
-        <section className="notice-actions">
+      <section className="map-poster-shell">
+        <img className="map-poster-image" src="/mind-crash-map.png" alt="Mind Crash event poster" />
+        <div className="map-poster-actions">
           <button className="gold-btn" onClick={() => navigate('/dashboard/auth')}>
             Enter The Platform
           </button>
-          <button className="ghost-btn" onClick={() => navigate('/admin/login')}>
-            Admin Portal
-          </button>
-        </section>
+        </div>
+      </section>
 
-        <section className="rules-grid">
-          {eventRounds.map((round) => (
-            <article key={round.title} className="parchment-panel">
-              <div className="panel-pin" aria-hidden="true" />
-              <p className="parchment-accent">{round.accent}</p>
-              <h2>{round.title}</h2>
-              <ol className="parchment-list">
-                {round.items.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ol>
-            </article>
-          ))}
+      <p className="map-undertext">Two enchanted trials await. Decode, discover, and outwit the Genie.</p>
 
-          <article className="parchment-panel parchment-panel-wide">
-            <div className="panel-pin" aria-hidden="true" />
-            <p className="parchment-accent">Read before you enter</p>
-            <h2>General Rules</h2>
-            <ol className="parchment-list">
-              {generalRules.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ol>
+      <section className="landing-notice-content">
+        <div className="rules-grid">
+          <article className="rule-scroll-card">
+            <img className="rule-scroll-image" src="/round1-rules.png" alt="Round 1 rules and regulations" />
           </article>
-        </section>
+          <article className="rule-scroll-card">
+            <img className="rule-scroll-image" src="/round2-rules.png" alt="Round 2 rules and regulations" />
+          </article>
+
+          <article className="rule-scroll-card rule-scroll-card-wide">
+            <img className="rule-scroll-image" src="/guidelines.png" alt="Participation guidelines and general rules" />
+          </article>
+        </div>
 
         <footer className="notice-footer">
           <span>Venue: CSE Lab</span>
