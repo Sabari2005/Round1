@@ -4,8 +4,8 @@ import { api } from '../lib/api';
 import { saveSession } from '../lib/auth';
 
 export function AdminLoginPage() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('admin');
+  const [password, setPassword] = useState('admin123');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -33,18 +33,12 @@ export function AdminLoginPage() {
         <form onSubmit={handleSubmit} className="stack-gap">
           <label className="field-label">
             Username
-            <input
-              autoComplete="off"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-              required
-            />
+            <input value={username} onChange={(event) => setUsername(event.target.value)} required />
           </label>
           <label className="field-label">
             Password
             <input
               type="password"
-              autoComplete="off"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
